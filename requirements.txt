@@ -1,4 +1,7 @@
 pandas
 numpy
 seaborn
+pandas
+scikit-learn
+dataclasses
 -e .
