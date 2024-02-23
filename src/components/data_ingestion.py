@@ -1,11 +1,16 @@
 import os
 import sys
-# import our exception from src
-from src.exception import CustomException
-from src.logger import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
+
+# import our exception from src
+from src.exception import CustomException
+from src.logger import logging
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
+from src.components.model_trainer import ModelTrainer
+
 
 #This class will contain all the configuration related to saving retriving the data.
 @dataclass
@@ -39,15 +44,26 @@ class DataIngestion:
 
             logging.info("Ingestion of data completed")
             return (
-                self.ingestionConfig.test_data_path,
-                self.ingestionConfig.train_data_path
+                self.ingestionConfig.train_data_path,
+                self.ingestionConfig.test_data_path
+                
             )
         except Exception as e:
             raise CustomException(e, sys)
 
 if __name__ == "__main__":
     object = DataIngestion()
-    object.initiate_DataIngestion()
+    train_data , test_data=  object.initiate_DataIngestion()
+    logging.info("Creating instance of Data Transformation")
+    dataTransformation = DataTransformation()
+    logging.info("Calling initiateDataTransformation.")
+    trainArray,testArray,_ = dataTransformation.initiateDataTransformation(train_data,test_data)
+    modelTrainer = ModelTrainer()
+    print(modelTrainer.initiateModelTrainer(trainArray,testArray,_))
+    
+
+
+
 
 
 
