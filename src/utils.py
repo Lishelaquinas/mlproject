@@ -1,10 +1,12 @@
 import sys
 import os
 import dill
+import pickle
 import pandas as pd
 import numpy as np
 from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV
+
 
 from src.exception import CustomException
 
@@ -39,6 +41,17 @@ def evaluate_model(Xtrain,ytrain,Xtest,ytest,models,params):
 
     except Exception as e:
         raise CustomException(e, sys)
+    
+def load_object(file_path):
+    try:
+        print("Inside load object function")
+        with open (file_path, "rb") as fileObject:
+            return dill.load(fileObject)
+    
+    except Exception as e:
+        raise CustomException(e, sys)
+
+
    
 
     

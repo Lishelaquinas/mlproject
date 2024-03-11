@@ -25,42 +25,50 @@ class DataTransformation:
         This function is responsible for data transformation.
         '''
         try:
-            numericalColumns = ["writing_score","reading_score"]
-            categoricalColumns = ["gender",
-                                  "race_ethnicity" ,
-                                  "parental_level_of_education",
-                                  "lunch",
-                                  "test_preparation_course"]
-            #create a pipleline to handle missing values and to apply standard scalar to numerical values.
-            numPipeline = Pipeline(
-                steps=[
-                    ("imputer",SimpleImputer(strategy="median")),
-                    ("scaler",StandardScaler())
-                ])
-            
-            logging.info("Numerical columns scaling completed")
+            numerical_columns = ["writing_score", "reading_score"]
+            categorical_columns = [
+                "gender",
+                "race_ethnicity",
+                "parental_level_of_education",
+                "lunch",
+                "test_preparation_course",
+            ]
 
-            categoricalPipeline = Pipeline(
+            num_pipeline= Pipeline(
                 steps=[
-                    ("imputer",SimpleImputer(strategy="most_frequent")), #missing value
-                    ("one_hot_encoder",OneHotEncoder()),
-                    ("scaler",StandardScaler(with_mean=False))
-                ])
-            logging.info("Categorical columns encoding completed")
+                ("imputer",SimpleImputer(strategy="median")),
+                ("scaler",StandardScaler())
 
-            preprocessor = ColumnTransformer(
-                [
-                    # pipeline name, what  is the pipeline, columns on which you have to apply the pipeline.
-                    ("numericalPipeline",numPipeline, numericalColumns),
-                    ("categoricalPipeline",categoricalPipeline,categoricalColumns)
-             
                 ]
             )
 
+            cat_pipeline=Pipeline(
+
+                steps=[
+                ("imputer",SimpleImputer(strategy="most_frequent")),
+                ("one_hot_encoder",OneHotEncoder()),
+                ("scaler",StandardScaler(with_mean=False))
+                ]
+
+            )
+
+            logging.info(f"Categorical columns: {categorical_columns}")
+            logging.info(f"Numerical columns: {numerical_columns}")
+
+            preprocessor=ColumnTransformer(
+                [
+                ("num_pipeline",num_pipeline,numerical_columns),
+                ("cat_pipelines",cat_pipeline,categorical_columns)
+
+                ]
+
+
+            )
+
+
             return preprocessor
         except Exception as e:
-            raise CustomException(e, sys)
-        
+            raise CustomException(e,sys)        
     def initiateDataTransformation(self, train_data_path,test_data_path):
         try:
             train_df = pd.read_csv(train_data_path)
